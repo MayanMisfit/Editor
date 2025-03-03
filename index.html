@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown & YAML Editor</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- CodeMirror CSS -->
+    <title>Split View Editor</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
-    <!-- Adding Fira Code font for better code display -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css">
+    <!-- Add marked library for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Add js-yaml library for YAML parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -18,13 +20,22 @@
                     <option value="markdown">Markdown</option>
                     <option value="yaml">YAML</option>
                 </select>
-                <div class="datetime" id="current-time"></div>
-            </div>
-            <div class="user-info">
-                <span>User: MayanMisfit</span>
+                <div class="info-section">
+                    <div class="datetime" id="current-time">2025-03-03 19:36:04</div>
+                    <div class="user-info">MayanMisfit</div>
+                </div>
             </div>
         </header>
-        <div id="editor"></div>
+        <div class="split-view">
+            <div class="editor-pane">
+                <div class="pane-header">Editor</div>
+                <div id="editor"></div>
+            </div>
+            <div class="preview-pane">
+                <div class="pane-header">Preview</div>
+                <div id="preview"></div>
+            </div>
+        </div>
     </div>
 
     <!-- CodeMirror and its dependencies -->
