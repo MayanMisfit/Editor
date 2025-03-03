@@ -1,0 +1,171 @@
+:root {
+    --background: #282a36;
+    --current-line: #44475a;
+    --foreground: #f8f8f2;
+    --comment: #6272a4;
+    --cyan: #8be9fd;
+    --green: #50fa7b;
+    --orange: #ffb86c;
+    --pink: #ff79c6;
+    --purple: #bd93f9;
+    --red: #ff5555;
+    --yellow: #f1fa8c;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Fira Code', monospace;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.editor-header {
+    margin-bottom: 1rem;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.datetime {
+    color: var(--comment);
+    font-size: 0.9rem;
+}
+
+.user-info {
+    color: var(--cyan);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+#language-selector {
+    background-color: var(--current-line);
+    color: var(--foreground);
+    border: 1px solid var(--comment);
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: 'Fira Code', monospace;
+}
+
+#editor {
+    flex-grow: 1;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* CodeMirror Dracula Theme */
+.CodeMirror {
+    height: 100% !important;
+    font-family: 'Fira Code', monospace !important;
+    background-color: var(--background) !important;
+    color: var(--foreground) !important;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.CodeMirror-gutters {
+    background-color: var(--background) !important;
+    border-right: 1px solid var(--current-line) !important;
+}
+
+.CodeMirror-linenumber {
+    color: var(--comment) !important;
+}
+
+.CodeMirror-cursor {
+    border-left: 2px solid var(--pink) !important;
+}
+
+.CodeMirror-selected {
+    background: var(--current-line) !important;
+}
+
+.cm-header {
+    color: var(--pink) !important;
+}
+
+.cm-quote {
+    color: var(--yellow) !important;
+}
+
+.cm-keyword {
+    color: var(--pink) !important;
+}
+
+.cm-atom {
+    color: var(--purple) !important;
+}
+
+.cm-number {
+    color: var(--purple) !important;
+}
+
+.cm-def {
+    color: var(--green) !important;
+}
+
+.cm-variable {
+    color: var(--orange) !important;
+}
+
+.cm-variable-2 {
+    color: var(--cyan) !important;
+}
+
+.cm-variable-3 {
+    color: var(--green) !important;
+}
+
+.cm-property {
+    color: var(--cyan) !important;
+}
+
+.cm-operator {
+    color: var(--pink) !important;
+}
+
+.cm-comment {
+    color: var(--comment) !important;
+    font-style: italic;
+}
+
+.cm-string {
+    color: var(--yellow) !important;
+}
+
+.cm-string-2 {
+    color: var(--yellow) !important;
+}
+
+.cm-tag {
+    color: var(--pink) !important;
+}
+
+.cm-meta {
+    color: var(--pink) !important;
+}
+
+.cm-qualifier {
+    color: var(--green) !important;
+}
+
+.cm-builtin {
+    color: var(--cyan) !important;
+}
+
+.cm-link {
+    color: var(--cyan) !important;
+}

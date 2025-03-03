@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown & YAML Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
+    <!-- Adding Fira Code font for better code display -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css">
+</head>
+<body>
+    <div class="container">
+        <header class="editor-header">
+            <div class="top-bar">
+                <select id="language-selector">
+                    <option value="markdown">Markdown</option>
+                    <option value="yaml">YAML</option>
+                </select>
+                <div class="datetime" id="current-time"></div>
+            </div>
+            <div class="user-info">
+                <span>User: MayanMisfit</span>
+            </div>
+        </header>
+        <div id="editor"></div>
+    </div>
+
+    <!-- CodeMirror and its dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/yaml/yaml.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
