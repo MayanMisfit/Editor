@@ -1,0 +1,20 @@
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Compiled files
+*.class
+*.o
+*.pyc
+
+# Dependency directories
+node_modules/
+vendor/
+dist/
+build/
+
+# Operating System files
+.DS_Store
+Thumbs.db
