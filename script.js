@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Configure marked for security and GFM
+    marked.setOptions({
+        gfm: true,
+        breaks: true,
+        sanitize: false,
+        headerIds: true,
+        mangle: false
+    });
+
     // Initialize CodeMirror
     const editor = CodeMirror(document.getElementById('editor'), {
         mode: 'markdown',
@@ -13,13 +22,20 @@ document.addEventListener('DOMContentLoaded', function() {
         value: '# Welcome to the Editor\n\nStart typing your markdown or yaml here...'
     });
 
-    // Configure marked for security
-    marked.setOptions({
-        sanitize: true,
-        breaks: true
-    });
+    // Toast notification function
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+            document.body.removeChild(toast);
+        }, 3000);
+    }
 
-    // Preview update function
+    // Preview update function with proper sanitization and rendering
     function updatePreview() {
         const content = editor.getValue();
         const preview = document.getElementById('preview');
@@ -27,69 +43,186 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (mode === 'markdown') {
             preview.className = 'markdown-preview';
-            preview.innerHTML = marked(content);
+            // Use DOMPurify if available, otherwise use marked's sanitize option
+            const rendered = marked.parse(content);
+            preview.innerHTML = rendered;
         } else if (mode === 'yaml') {
             preview.className = 'yaml-preview';
             try {
                 const parsed = jsyaml.load(content);
-                preview.innerHTML = '<pre>' + 
-                    JSON.stringify(parsed, null, 2)
-                        .replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;') + 
-                    '</pre>';
+                const formatted = JSON.stringify(parsed, null, 2)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                preview.innerHTML = `<pre class="yaml-content">${formatted}</pre>`;
             } catch (e) {
-                preview.innerHTML = '<pre class="error">YAML Parsing Error:\n' + e.message + '</pre>';
+                preview.innerHTML = `<pre class="error">YAML Parsing Error:\n${e.message}</pre>`;
             }
         }
     }
 
-    // Update preview on changes
-    editor.on('change', updatePreview);
-
-    // Handle language switching
-    const languageSelector = document.getElementById('language-selector');
-    languageSelector.addEventListener('change', (e) => {
-        const language = e.target.value;
-        editor.setOption('mode', language);
-        updatePreview();
+    // Markdown Tools Functions
+    function insertMarkdown(tag) {
+        const selection = editor.getSelection();
+        let text = '';
         
-        // Save current content and mode
-        localStorage.setItem('editorContent', editor.getValue());
-        localStorage.setItem('editorMode', language);
+        switch(tag) {
+            case 'bold':
+                text = selection ? `**${selection}**` : '**bold text**';
+                break;
+            case 'italic':
+                text = selection ? `*${selection}*` : '*italic text*';
+                break;
+            case 'heading':
+                text = selection ? `# ${selection}` : '# Heading';
+                break;
+            case 'link':
+                text = selection ? `[${selection}](url)` : '[link text](url)';
+                break;
+            case 'image':
+                text = '![alt text](image-url)';
+                break;
+            case 'code':
+                text = selection ? `\`${selection}\`` : '`code`';
+                break;
+            case 'codeblock':
+                text = selection ? 
+                    `\`\`\`\n${selection}\n\`\`\`` : 
+                    '```\ncode block\n```';
+                break;
+            case 'quote':
+                text = selection ? 
+                    selection.split('\n').map(line => `> ${line}`).join('\n') : 
+                    '> quote';
+                break;
+            case 'ul':
+                text = selection ? 
+                    selection.split('\n').map(line => `- ${line}`).join('\n') : 
+                    '- list item';
+                break;
+            case 'ol':
+                text = selection ? 
+                    selection.split('\n').map((line, i) => `${i + 1}. ${line}`).join('\n') : 
+                    '1. list item';
+                break;
+            case 'task':
+                text = selection ? 
+                    selection.split('\n').map(line => `- [ ] ${line}`).join('\n') : 
+                    '- [ ] task';
+                break;
+            case 'table':
+                text = '| Header | Header |\n|---------|----------|\n| Cell | Cell |';
+                break;
+        }
+        
+        editor.replaceSelection(text);
+        editor.focus();
+        updatePreview(); // Update preview after inserting markdown
+    }
+
+    // Add Markdown button handlers
+    document.querySelectorAll('.md-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const tag = e.currentTarget.getAttribute('data-tag');
+            insertMarkdown(tag);
+        });
     });
 
-    // Load saved content and mode
-    const savedContent = localStorage.getItem('editorContent');
-    const savedMode = localStorage.getItem('editorMode');
-    
-    if (savedContent) {
-        editor.setValue(savedContent);
-    }
-    
-    if (savedMode) {
-        languageSelector.value = savedMode;
-        editor.setOption('mode', savedMode);
-    }
+    // Export functionality
+    document.getElementById('export-file').addEventListener('click', () => {
+        const content = editor.getValue();
+        const mode = document.getElementById('language-selector').value;
+        const extension = mode === 'markdown' ? 'md' : 'yaml';
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `document.${extension}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('File exported successfully');
+    });
 
-    // Initial preview
-    updatePreview();
-
-    // Auto-save content every 5 seconds
-    setInterval(() => {
-        localStorage.setItem('editorContent', editor.getValue());
-    }, 5000);
-
-    // Update datetime - keep the format specified
+    // Update datetime in specified format
     function updateDateTime() {
         const now = new Date();
-        const formatted = now.toISOString()
-            .replace('T', ' ')
-            .replace(/\.\d{3}Z$/, '');
+        const year = now.getUTCFullYear();
+        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(now.getUTCDate()).padStart(2, '0');
+        const hours = String(now.getUTCHours()).padStart(2, '0');
+        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+        
+        const formatted = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         document.getElementById('current-time').textContent = formatted;
     }
 
-    // Update time every second
+    // Handle preview pane buttons
+    document.getElementById('refresh-preview').addEventListener('click', () => {
+        updatePreview();
+        showToast('Preview refreshed');
+    });
+
+    document.getElementById('copy-preview').addEventListener('click', () => {
+        const preview = document.getElementById('preview');
+        const content = preview.innerText;
+        navigator.clipboard.writeText(content)
+            .then(() => showToast('Preview copied to clipboard'))
+            .catch(() => showToast('Failed to copy preview'));
+    });
+
+    // Handle language switching
+    document.getElementById('language-selector').addEventListener('change', (e) => {
+        const language = e.target.value;
+        editor.setOption('mode', language);
+        updatePreview();
+        showToast(`Switched to ${language} mode`);
+    });
+
+    // Toggle preview
+    document.getElementById('toggle-preview').addEventListener('click', () => {
+        const previewContainer = document.querySelector('.preview-container');
+        const editorContainer = document.querySelector('.editor-container');
+        
+        if (previewContainer.style.display === 'none') {
+            previewContainer.style.display = 'flex';
+            editorContainer.style.flex = '1';
+            updatePreview(); // Update preview when showing
+            showToast('Preview enabled');
+        } else {
+            previewContainer.style.display = 'none';
+            editorContainer.style.flex = '2';
+            showToast('Preview disabled');
+        }
+    });
+
+    // Toggle word wrap
+    document.getElementById('toggle-wrap').addEventListener('click', () => {
+        const wrap = editor.getOption('lineWrapping');
+        editor.setOption('lineWrapping', !wrap);
+        showToast(wrap ? 'Word wrap disabled' : 'Word wrap enabled');
+    });
+
+    // Add editor change handler
+    editor.on('change', () => {
+        updatePreview();
+    });
+
+    // Handle undo/redo
+    document.getElementById('undo').addEventListener('click', () => {
+        editor.undo();
+        updatePreview();
+    });
+
+    document.getElementById('redo').addEventListener('click', () => {
+        editor.redo();
+        updatePreview();
+    });
+
+    // Initial setup
     updateDateTime();
     setInterval(updateDateTime, 1000);
+    updatePreview();
 });

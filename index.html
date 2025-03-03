@@ -3,45 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Split View Editor</title>
+    <title>MD/YAML Editor</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CodeMirror CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.css">
+    <!-- Fira Code font -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css">
-    <!-- Add marked library for Markdown rendering -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Add js-yaml library for YAML parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header class="editor-header">
-            <div class="top-bar">
-                <select id="language-selector">
-                    <option value="markdown">Markdown</option>
-                    <option value="yaml">YAML</option>
-                </select>
-                <div class="info-section">
-                    <div class="datetime" id="current-time">2025-03-03 19:36:04</div>
-                    <div class="user-info">MayanMisfit</div>
+            <div class="status-bar">
+                <div class="datetime-container">
+                    Current Date and Time (UTC - YYYY-MM-DD HH:MM:SS formatted): <span id="current-time">2025-03-03 19:53:20</span>
+                </div>
+                <div class="user-container">
+                    Current User's Login: <span class="user-login">MayanMisfit</span>
+                </div>
+            </div>
+            <div class="toolbar">
+                <div class="left-tools">
+                    <select id="language-selector">
+                        <option value="markdown">Markdown</option>
+                        <option value="yaml">YAML</option>
+                    </select>
+                    <div class="markdown-tools">
+                        <button class="tool-btn md-btn" data-tag="bold" title="Bold">
+                            <i class="fas fa-bold"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="italic" title="Italic">
+                            <i class="fas fa-italic"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="heading" title="Heading">
+                            <i class="fas fa-heading"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="link" title="Link">
+                            <i class="fas fa-link"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="image" title="Image">
+                            <i class="fas fa-image"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="code" title="Code">
+                            <i class="fas fa-code"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="codeblock" title="Code Block">
+                            <i class="fas fa-file-code"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="quote" title="Quote">
+                            <i class="fas fa-quote-right"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="ul" title="Unordered List">
+                            <i class="fas fa-list-ul"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="ol" title="Ordered List">
+                            <i class="fas fa-list-ol"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="task" title="Task List">
+                            <i class="fas fa-tasks"></i>
+                        </button>
+                        <button class="tool-btn md-btn" data-tag="table" title="Table">
+                            <i class="fas fa-table"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="right-tools">
+                    <button class="tool-btn" id="toggle-preview" title="Toggle Preview">
+                        <i class="fas fa-columns"></i>
+                    </button>
+                    <button class="tool-btn" id="toggle-wrap" title="Toggle Word Wrap">
+                        <i class="fas fa-align-left"></i>
+                    </button>
+                    <button class="tool-btn" id="export-file" title="Export">
+                        <i class="fas fa-download"></i>
+                    </button>
                 </div>
             </div>
         </header>
         <div class="split-view">
-            <div class="editor-pane">
-                <div class="pane-header">Editor</div>
+            <div class="editor-container">
+                <div class="pane-header">
+                    <span>Editor</span>
+                    <div class="pane-tools">
+                        <button class="tool-btn" id="undo" title="Undo">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button class="tool-btn" id="redo" title="Redo">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
+                </div>
                 <div id="editor"></div>
             </div>
-            <div class="preview-pane">
-                <div class="pane-header">Preview</div>
+            <div class="preview-container">
+                <div class="pane-header">
+                    <span>Preview</span>
+                    <div class="pane-tools">
+                        <button class="tool-btn" id="refresh-preview" title="Refresh Preview">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                        <button class="tool-btn" id="copy-preview" title="Copy Preview">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
                 <div id="preview"></div>
             </div>
         </div>
     </div>
 
-    <!-- CodeMirror and its dependencies -->
+    <!-- Scripts -->
+    <!-- CodeMirror -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/markdown/markdown.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/6.65.7/mode/yaml/yaml.min.js"></script>
+    <!-- Marked for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- js-yaml for YAML parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <!-- Custom JS -->
     <script src="script.js"></script>
 </body>
 </html>

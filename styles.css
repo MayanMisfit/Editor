@@ -28,36 +28,72 @@ body {
     box-sizing: border-box;
 }
 
-.editor-header {
-    margin-bottom: 1rem;
-}
-
-.top-bar {
+/* Status Bar Styles */
+.status-bar {
+    background-color: var(--current-line);
+    padding: 0.5rem 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
-    background-color: var(--current-line);
-    padding: 0.5rem;
-    border-radius: 4px;
+    border-radius: 4px 4px 0 0;
+    font-size: 0.9rem;
 }
 
-.info-section {
+.datetime-container {
+    color: var(--comment);
+}
+
+#current-time {
+    color: var(--green);
+}
+
+.user-container {
+    color: var(--comment);
+}
+
+.user-login {
+    color: var(--cyan);
+}
+
+/* Toolbar Styles */
+.toolbar {
+    background-color: var(--current-line);
+    padding: 0.5rem;
     display: flex;
-    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 0 0 4px 4px;
+    margin-bottom: 1rem;
+}
+
+.left-tools, .right-tools {
+    display: flex;
+    gap: 0.5rem;
     align-items: center;
 }
 
-.datetime {
-    color: var(--comment);
-    font-size: 0.9rem;
+.tool-btn {
+    background-color: var(--background);
+    color: var(--foreground);
+    border: 1px solid var(--comment);
+    border-radius: 4px;
+    padding: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    transition: all 0.2s ease;
 }
 
-.user-info {
-    color: var(--cyan);
-    font-size: 0.9rem;
-    padding-left: 1rem;
-    border-left: 1px solid var(--comment);
+.tool-btn:hover {
+    background-color: var(--comment);
+    color: var(--background);
+}
+
+.tool-btn:active {
+    transform: scale(0.95);
 }
 
 #language-selector {
@@ -68,81 +104,98 @@ body {
     border-radius: 4px;
     font-size: 1rem;
     font-family: 'Fira Code', monospace;
+    margin-right: 1rem;
 }
 
+/* Split View Styles */
 .split-view {
     display: flex;
     flex-grow: 1;
     gap: 1rem;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 160px);
 }
 
-.editor-pane, .preview-pane {
+.editor-container, .preview-container {
     flex: 1;
     display: flex;
     flex-direction: column;
     background-color: var(--current-line);
     border-radius: 4px;
-    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .pane-header {
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
     background-color: var(--background);
     color: var(--pink);
     font-weight: bold;
     border-bottom: 1px solid var(--comment);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pane-tools {
+    display: flex;
+    gap: 0.5rem;
 }
 
 #editor, #preview {
     flex-grow: 1;
     overflow: auto;
+    background-color: var(--background);
 }
 
 #preview {
     padding: 1rem;
     color: var(--foreground);
-    background-color: var(--background);
 }
 
-/* Markdown Preview Styles */
-#preview.markdown-preview {
+/* Preview Styles */
+.markdown-preview {
     font-family: 'Arial', sans-serif;
 }
 
-#preview.markdown-preview h1,
-#preview.markdown-preview h2,
-#preview.markdown-preview h3,
-#preview.markdown-preview h4,
-#preview.markdown-preview h5,
-#preview.markdown-preview h6 {
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4,
+.markdown-preview h5,
+.markdown-preview h6 {
     color: var(--pink);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
 }
 
-#preview.markdown-preview a {
+.markdown-preview a {
     color: var(--cyan);
+    text-decoration: none;
 }
 
-#preview.markdown-preview code {
+.markdown-preview a:hover {
+    text-decoration: underline;
+}
+
+.markdown-preview code {
     background-color: var(--current-line);
     padding: 0.2em 0.4em;
     border-radius: 3px;
     font-family: 'Fira Code', monospace;
 }
 
-#preview.markdown-preview pre {
+.markdown-preview pre {
     background-color: var(--current-line);
     padding: 1rem;
     border-radius: 4px;
     overflow-x: auto;
 }
 
-#preview.yaml-preview {
+.yaml-preview {
     font-family: 'Fira Code', monospace;
     white-space: pre-wrap;
 }
 
-/* CodeMirror Dracula Theme */
+/* CodeMirror Customization */
 .CodeMirror {
     height: 100% !important;
     font-family: 'Fira Code', monospace !important;
@@ -169,6 +222,30 @@ body {
     background: var(--current-line) !important;
 }
 
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--green);
+    color: var(--background);
+    padding: 1rem;
+    border-radius: 4px;
+    display: none;
+    animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
 /* Syntax highlighting */
 .cm-header {color: var(--pink) !important;}
 .cm-quote {color: var(--yellow) !important;}
@@ -189,3 +266,150 @@ body {
 .cm-qualifier {color: var(--green) !important;}
 .cm-builtin {color: var(--cyan) !important;}
 .cm-link {color: var(--cyan) !important;}
+
+/* ... (previous CSS remains the same) ... */
+
+/* Add these new styles */
+.markdown-tools {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0 1rem;
+    border-left: 1px solid var(--comment);
+    border-right: 1px solid var(--comment);
+}
+
+.tool-btn.md-btn {
+    background-color: var(--current-line);
+    border-color: var(--comment);
+}
+
+.tool-btn.md-btn:hover {
+    background-color: var(--comment);
+    color: var(--background);
+}
+
+/* Export button styling */
+#export-file {
+    background-color: var(--green);
+    color: var(--background);
+}
+
+#export-file:hover {
+    background-color: var(--cyan);
+}
+
+/* Add these styles to your existing CSS file */
+
+.markdown-preview {
+    padding: 20px;
+    line-height: 1.6;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4,
+.markdown-preview h5,
+.markdown-preview h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--pink);
+}
+
+.markdown-preview h1 { font-size: 2em; }
+.markdown-preview h2 { font-size: 1.5em; }
+.markdown-preview h3 { font-size: 1.25em; }
+.markdown-preview h4 { font-size: 1em; }
+.markdown-preview h5 { font-size: 0.875em; }
+.markdown-preview h6 { font-size: 0.85em; }
+
+.markdown-preview p {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.markdown-preview code {
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    background-color: var(--current-line);
+    border-radius: 3px;
+    font-family: 'Fira Code', monospace;
+}
+
+.markdown-preview pre {
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: var(--current-line);
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+
+.markdown-preview pre code {
+    display: block;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    line-height: inherit;
+    word-wrap: normal;
+    background-color: transparent;
+    border: 0;
+}
+
+.markdown-preview blockquote {
+    padding: 0 1em;
+    color: var(--comment);
+    border-left: 0.25em solid var(--comment);
+    margin: 0 0 16px 0;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+    padding-left: 2em;
+    margin-bottom: 16px;
+}
+
+.markdown-preview table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.markdown-preview table th,
+.markdown-preview table td {
+    padding: 6px 13px;
+    border: 1px solid var(--comment);
+}
+
+.markdown-preview table tr {
+    background-color: var(--background);
+    border-top: 1px solid var(--comment);
+}
+
+.markdown-preview img {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.yaml-preview {
+    padding: 20px;
+}
+
+.yaml-preview pre {
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.error {
+    color: var(--red);
+}
